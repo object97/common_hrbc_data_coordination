@@ -24,12 +24,24 @@ var usr = make(map[int]User)
 func main() {
     // database
 	fmt.Println("Hello golang from docker! ")
-    // データベースへの接続 ①
+    // DBにアクセスするためのオブジェクトを取得
 	db, dbErr := sql.Open(DriverName, DataSourceName)
 	if dbErr != nil {
-		log.Print("error connecting to database:", dbErr)
+		log.Print("error sql.Open:", dbErr)
 	}
     defer db.Close()
+
+    // DBが接続を確認。接続されるまで試行
+    for i := 0; i < 100; i++ {
+		if err := db.Ping(); err != nil {
+            fmt.Println(i)
+            log.Print("PingError: ", err)
+            continue;
+        }
+        fmt.Println("DB access success ")
+        break
+	}
+    
     // usersテーブルの全てのレコードを取得するクエリの実行 ②
     rows, queryErr := db.Query("SELECT * FROM users")
     if queryErr != nil {
