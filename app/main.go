@@ -17,7 +17,8 @@ const (
 	// DriverName ドライバ名(mysql固定)
 	DriverName = "mysql"
 	// DataSourceName user:password@tcp(container-name:port)/dbname
-	DataSourceName = "root:golang@tcp(common_hrbc_data_coordination_mysql_1:3310)/golang_db"
+    // DataSourceName = "root:golang@tcp(common_hrbc_data_coordination_mysql_1:3310)/golang_db"
+	DataSourceName = "root:golang@tcp(mysql)/golang_db"
 )
 var usr = make(map[int]User)
 
@@ -31,8 +32,8 @@ func main() {
 	}
     defer db.Close()
 
-    // DBが接続を確認。接続されるまで試行
-    for i := 0; i < 100; i++ {
+    // DB接続を確認。接続されるまで試行（10回まで）
+    for i := 0; i < 10; i++ {
 		if err := db.Ping(); err != nil {
             fmt.Println(i)
             log.Print("PingError: ", err)
@@ -62,4 +63,5 @@ func main() {
         }
 
     }
+    log.Print(usr)
 }
