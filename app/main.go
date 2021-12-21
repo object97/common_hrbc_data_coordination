@@ -18,7 +18,7 @@ const (
 	DriverName = "mysql"
 	// DataSourceName user:password@tcp(container-name:port)/dbname
     // DataSourceName = "root:golang@tcp(common_hrbc_data_coordination_mysql_1:3310)/golang_db"
-	DataSourceName = "root:golang@tcp(mysql)/golang_db"
+	DataSourceName = "root:golang@tcp(mysql)/golang_db" // mysql -u root -p"golang" golang_db
 )
 var usr = make(map[int]User)
 
