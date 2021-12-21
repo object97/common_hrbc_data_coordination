@@ -3,6 +3,8 @@ package main
 import (
     "app/models/hrbc"
 	"database/sql" // ①
+    "gopkg.in/ini.v1"
+    "os"
 	"log"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql" // ②
@@ -14,6 +16,17 @@ type User struct {
 	Name     string
 	Password string
 }
+
+type ConfigList struct {
+    Protocol  string
+    Port      int
+    DbName    string
+    SQLDriver string
+}
+
+// ConfigList（構造体）を外部パッケージからも読み込めるようにパブリックで変数宣言
+var Config ConfigList
+
 const (
 	// DriverName ドライバ名(mysql固定)
 	DriverName = "mysql"
@@ -23,7 +36,27 @@ const (
 )
 var usr = make(map[int]User)
 
+func init() {
+    cfg, err := ini.Load("config/local.ini")
+    if err != nil {
+        fmt.Printf("Fail to read file: %v", err)
+        os.Exit(1)
+    }
+
+    Config = ConfigList{
+        Protocol:  cfg.Section("server").Key("protocol").String(),
+        Port:      cfg.Section("server").Key("port").MustInt(),
+        DbName:    cfg.Section("db").Key("name").MustString("sample.sql"),
+        SQLDriver: cfg.Section("db").Key("driver").String(),
+    }
+}
+
 func main() {
+    fmt.Printf("%T %v\n", Config.Protocol, Config.Protocol)
+    fmt.Printf("%T %v\n", Config.Port, Config.Port)
+    fmt.Printf("%T %v\n", Config.DbName, Config.DbName)
+    fmt.Printf("%T %v\n", Config.SQLDriver, Config.SQLDriver)
+
     hrbc.SayHello()
 	fmt.Println("Hello golang from docker! ")
     // database
