@@ -1,0 +1,23 @@
+version: "3" # composeファイルのバージョン
+services: 
+    app: # サービス名
+        build: . # ビルドに使うDockerfileの場所
+        tty: true # コンテナの永続化
+        ports: # ホストOSのポートとコンテナのポートをつなげる 
+            - "8010:8010"
+        volumes:
+            - ./app:/go/src/app # マウントディレクトリ
+        depends_on: 
+            - mysql
+
+    mysql:
+        build: ./mysql/
+        volumes:
+            # 初期データを投入するSQLが格納されているdir
+            - ./mysql/init:/docker-entrypoint-initdb.d
+            # 永続化するときにマウントするdir
+            - ./mysql/data:/var/lib/mysql
+        environment: 
+            - MYSQL_ROOT_PASSWORD=golang
+        ports:
+            - "3310:3310"
